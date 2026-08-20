@@ -43,7 +43,7 @@
         .sig-line { border-bottom: 1px dotted #94a3b8; width: 200px; margin: 0 auto; }
         .footer-note { text-align: center; color: #64748b; font-size: 11px; margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
         .status-msg { font-size: 12px; font-weight: bold; }
-        .note-msg { font-size: 11px; color: #e67e22; margin-top: 4px; }
+        .note-msg { font-size: 11px; color: #e67e22; margin-top: 4px; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -89,9 +89,9 @@
         <thead>
             <tr>
                 <th style="width: 8%;">លើកទី</th>
-                <th style="width: 30%;">កាលបរិច្ឆេទត្រូវបង់ (Due Date)</th>
-                <th style="width: 20%;">ទឹកប្រាក់ (Amount)</th>
-                <th style="width: 42%;">ស្ថានភាព (Status)</th>
+                <th style="width: 25%;">កាលបរិច្ឆេទត្រូវបង់ (Due Date)</th>
+                <th style="width: 17%;">ទឹកប្រាក់ (Amount)</th>
+                <th style="width: 50%;">ស្ថានភាព (Status)</th>
             </tr>
         </thead>
         <tbody id="installmentRows">
@@ -107,7 +107,6 @@
     <div class="footer-note">សូមអរគុណសម្រាប់ការប្រើប្រាស់សេវាកម្មរបស់យើងខ្ញុំ! / Thank you for your business!</div>
 
     <script>
-        // កាលបរិច្ឆេទ Due Date សម្រាប់ខែនីមួយៗ
         const installmentsData = [
             { dateStr: "09/09/2026", dueDate: "2026-09-09" },
             { dateStr: "09/10/2026", dueDate: "2026-10-09" },
@@ -121,7 +120,6 @@
 
         let currentInstallmentStatus = {};
 
-        // Render តារាងដំបូង
         const tbody = document.getElementById('installmentRows');
         installmentsData.forEach((item, index) => {
             let num = index + 1;
@@ -145,13 +143,14 @@
             `;
         });
 
-        // Function ទាញ Data និងពិនិត្យមើលកាលបរិច្ឆេទថ្ងៃនេះ (Date Validation)
         function loadInvoiceData() {
             fetch('/api/get-invoice?invoice_id=INV-2026-001')
             .then(res => res.json())
             .then(res => {
-                if ((res.status === 'success' || res.data) && res.data.installments) {
-                    currentInstallmentStatus = res.data.installments;
+                let invoiceData = res.data || res;
+
+                if (invoiceData && invoiceData.installments) {
+                    currentInstallmentStatus = invoiceData.installments;
                     
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
@@ -168,7 +167,7 @@
                         const dueDate = new Date(installmentsData[i - 1].dueDate);
                         dueDate.setHours(0, 0, 0, 0);
 
-                        noteDiv.innerText = ''; 
+                        if (noteDiv) noteDiv.innerText = ''; 
 
                         if (currentInstallmentStatus[`month_${i}`] === 'PAID') {
                             paidRadio.checked = true;
@@ -187,7 +186,7 @@
                                 } else {
                                     paidRadio.disabled = true;
                                     paidLabel.classList.add('disabled');
-                                    noteDiv.innerText = `🔒 មិនទាន់ដល់ថ្ងៃបង់ (ទាល់តែថ្ងៃទី ${installmentsData[i - 1].dateStr})`;
+                                    if (noteDiv) noteDiv.innerText = `🔒 មិនទាន់ដល់ថ្ងៃបង់ (ទាល់តែថ្ងៃទី ${installmentsData[i - 1].dateStr})`;
                                 }
                                 firstUnpaidFound = true;
                             } else {
@@ -197,14 +196,15 @@
                         }
                     }
 
-                    let currentBalance = parseFloat(res.data.remaining_balance);
-                    document.getElementById('remainingBalance').innerText = '$' + currentBalance.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                    if (invoiceData.remaining_balance !== undefined) {
+                        let currentBalance = parseFloat(invoiceData.remaining_balance);
+                        document.getElementById('remainingBalance').innerText = '$' + currentBalance.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                    }
                 }
             })
             .catch(err => console.error('Error fetching data:', err));
         }
 
-        // Function ពេលចុចបង់ប្រាក់
         function payMonth(monthNum) {
             const statusDiv = document.getElementById('saveStatus');
             statusDiv.style.color = '#d35400';
