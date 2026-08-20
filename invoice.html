@@ -147,4 +147,101 @@
                                 <input type="radio" id="paid_${num}" name="item_${num}" value="PAID" disabled onchange="payMonth(${num})"> រួចរាល់
                             </label>
                         </div>
-                        <div id
+                        <div id="note_${num}" class="note-msg"></div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        function updateUIState() {
+            let firstUnpaidFound = false;
+
+            for (let i = 1; i <= 8; i++) {
+                const unpaidRadio = document.getElementById(`unpaid_${i}`);
+                const paidRadio = document.getElementById(`paid_${i}`);
+                const unpaidLabel = document.getElementById(`label_unpaid_${i}`);
+                const paidLabel = document.getElementById(`label_paid_${i}`);
+                const noteDiv = document.getElementById(`note_${i}`);
+
+                if (noteDiv) noteDiv.innerText = ''; 
+
+                if (currentInstallmentStatus[`month_${i}`] === 'PAID') {
+                    paidRadio.checked = true;
+                    unpaidRadio.disabled = true;
+                    paidRadio.disabled = true;
+                    unpaidLabel.classList.add('disabled');
+                    paidLabel.classList.add('disabled');
+                } else {
+                    unpaidRadio.checked = true;
+                    unpaidRadio.disabled = true;
+
+                    if (!firstUnpaidFound) {
+                        // បើកឱ្យចុចបានភ្លាមៗ ដោយមិនឆែក Due Date
+                        paidRadio.disabled = false;
+                        paidLabel.classList.remove('disabled');
+                        firstUnpaidFound = true;
+                    } else {
+                        // ខ្ទាស់ខែបន្ទាប់ៗរហូតដល់ខែមុនបង់រួច
+                        paidRadio.disabled = true;
+                        paidLabel.classList.add('disabled');
+                    }
+                }
+            }
+        }
+
+        function loadInvoiceData() {
+            updateUIState();
+
+            fetch('/api/get-invoice?invoice_id=INV-2026-001')
+            .then(res => res.json())
+            .then(res => {
+                let invoiceData = res.data || res;
+
+                if (invoiceData && invoiceData.installments) {
+                    currentInstallmentStatus = invoiceData.installments;
+                    updateUIState();
+
+                    if (invoiceData.remaining_balance !== undefined) {
+                        let currentBalance = parseFloat(invoiceData.remaining_balance);
+                        document.getElementById('remainingBalance').innerText = '$' + currentBalance.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                    }
+                }
+            })
+            .catch(err => console.error('Using fallback UI rendering:', err));
+        }
+
+        function payMonth(monthNum) {
+            const statusDiv = document.getElementById('saveStatus');
+            statusDiv.style.color = '#d35400';
+            statusDiv.innerText = '⏳ កំពុង រក្សាទុក...';
+
+            fetch('/api/mark-as-paid', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    invoice_id: 'INV-2026-001',
+                    month_number: monthNum
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    statusDiv.style.color = '#27ae60';
+                    statusDiv.innerText = '✓ បង់ប្រាក់រួចរាល់!';
+                    setTimeout(() => { statusDiv.innerText = ''; }, 3000);
+                    
+                    loadInvoiceData();
+                } else {
+                    alert('មានបញ្ហាក្នុងការ Save៖ ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Error saving:', err);
+                alert('មិនអាចភ្ជាប់ទៅ Server បានទេ!');
+            });
+        }
+
+        window.onload = loadInvoiceData;
+    </script>
+</body>
+</html>
