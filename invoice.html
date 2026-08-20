@@ -44,6 +44,17 @@
         .footer-note { text-align: center; color: #64748b; font-size: 11px; margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
         .status-msg { font-size: 12px; font-weight: bold; }
         .note-msg { font-size: 11px; color: #e67e22; margin-top: 4px; font-weight: 600; }
+        .btn-refresh {
+            background-color: #0070c0;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: inherit;
+        }
+        .btn-refresh:hover { background-color: #005691; }
     </style>
 </head>
 <body>
@@ -53,9 +64,10 @@
             <h1 class="main-title">វិក្កយបត្រ / INVOICE</h1>
             <div style="color: #7f8c8d; font-size: 13px;">ការបង់ប្រាក់រំលស់ប្រចាំខែ (Monthly Installment Invoice)</div>
         </div>
-        <div>
-            <div class="invoice-number">លេខវិក្កយបត្រ: #INV-2026-001</div>
-            <div style="font-size: 12px; color: #555; text-align: right;">កាលបរិច្ឆេទបង្កើត: 09/08/2026</div>
+        <div style="text-align: right;">
+            <button class="btn-refresh" onclick="location.reload()">🔄 Refresh</button>
+            <div class="invoice-number" style="margin-top: 8px;">លេខវិក្កយបត្រ: #INV-2026-001</div>
+            <div style="font-size: 12px; color: #555;">កាលបរិច្ឆេទបង្កើត: 09/08/2026</div>
         </div>
     </div>
 
@@ -94,9 +106,7 @@
                 <th style="width: 50%;">ស្ថានភាព (Status)</th>
             </tr>
         </thead>
-        <tbody id="installmentRows">
-            <!-- បង្កើតជួរតារាងដោយ JavaScript -->
-        </tbody>
+        <tbody id="installmentRows"></tbody>
     </table>
 
     <div class="signatures-container">
@@ -108,14 +118,14 @@
 
     <script>
         const installmentsData = [
+            { dateStr: "21/08/2026", dueDate: "2026-08-21" },
             { dateStr: "09/09/2026", dueDate: "2026-09-09" },
             { dateStr: "09/10/2026", dueDate: "2026-10-09" },
             { dateStr: "09/11/2026", dueDate: "2026-11-09" },
             { dateStr: "09/12/2026", dueDate: "2026-12-09" },
             { dateStr: "09/01/2027", dueDate: "2027-01-09" },
             { dateStr: "09/02/2027", dueDate: "2027-02-09" },
-            { dateStr: "09/03/2027", dueDate: "2027-03-09" },
-            { dateStr: "09/04/2027", dueDate: "2027-04-09" }
+            { dateStr: "09/03/2027", dueDate: "2027-03-09" }
         ];
 
         let currentInstallmentStatus = {};
@@ -207,9 +217,7 @@
                     }
                 }
             })
-            .catch(err => {
-                console.error('API Error, using client logic fallback:', err);
-            });
+            .catch(err => console.error('Using fallback UI rendering:', err));
         }
 
         function payMonth(monthNum) {
