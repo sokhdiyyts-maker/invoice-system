@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>វិក្កយបត្រ / INVOICE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap');
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Kantumruy Pro', sans-serif;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 30px 20px;
+            max-width: 800px;
+            margin: auto;
+            font-size: 13px;
+        }
+        .header-container { display: flex; justify-content: space-between; align-items: flex-end; }
+        .main-title { font-size: 26px; font-weight: 800; color: #0b1e36; margin: 0; }
+        .invoice-number { font-size: 15px; font-weight: 700; color: #0070c0; text-align: right; }
+        .divider-line { width: 100%; height: 3px; background-color: #0070c0; margin: 8px 0 25px 0; }
+        .info-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 30px; margin-bottom: 25px; }
+        .info-label { font-weight: 700; }
+        .dotted-line { border-bottom: 1px dotted #a0a0a0; height: 18px; }
+        .section-header { font-size: 14px; font-weight: 700; color: #0b1e36; margin: 20px 0 10px 0; padding-left: 8px; border-left: 4px solid #0070c0; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .summary-table th { background-color: #0b132b; color: #fff; padding: 10px; text-align: left; }
+        .summary-table td { padding: 10px; border: 1px solid #e2e8f0; }
+        .amount-green { color: #27ae60; font-weight: 700; text-align: right; }
+        .amount-red { color: #e74c3c; font-weight: 700; text-align: right; }
+        .amount-bold { font-weight: 700; text-align: right; }
+        .schedule-table th, .schedule-table td { padding: 10px; border: 1px solid #cbd5e1; text-align: center; }
+        .schedule-table th { background-color: #f1f5f9; }
+        .checkbox-container { display: flex; justify-content: center; gap: 15px; }
+        .checkbox-label { display: flex; align-items: center; gap: 5px; font-weight: 600; cursor: pointer; }
+        .checkbox-label.disabled { cursor: not-allowed; opacity: 0.5; }
+        .signatures-container { display: flex; justify-content: space-around; margin: 50px 0 20px 0; text-align: center; }
+        .sig-title-kh { font-weight: 700; }
+        .sig-title-en { color: #64748b; font-size: 11px; margin-bottom: 50px; }
+        .sig-line { border-bottom: 1px dotted #94a3b8; width: 200px; margin: 0 auto; }
+        .footer-note { text-align: center; color: #64748b; font-size: 11px; margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
+        .status-msg { font-size: 12px; font-weight: bold; }
+        .note-msg { font-size: 11px; color: #e67e22; margin-top: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <div>
+            <h1 class="main-title">វិក្កយបត្រ / INVOICE</h1>
+            <div style="color: #7f8c8d; font-size: 13px;">ការបង់ប្រាក់រំលស់ប្រចាំខែ (Monthly Installment Invoice)</div>
+        </div>
+        <div>
+            <div class="invoice-number">លេខវិក្កយបត្រ: #INV-2026-001</div>
+            <div style="font-size: 12px; color: #555; text-align: right;">កាលបរិច្ឆេទបង្កើត: 09/08/2026</div>
+        </div>
+    </div>
+
+    <div class="divider-line"></div>
+
+    <div class="info-container">
+        <div><div class="info-label">ឈ្មោះអតិថិជន:</div><div class="dotted-line"></div></div>
+        <div><div class="info-label">លេខទូរសព្ទ:</div><div class="dotted-line"></div></div>
+        <div><div class="info-label">អាសយដ្ឋាន:</div><div class="dotted-line"></div></div>
+        <div><div class="info-label">អត្តសញ្ញាណប័ណ្ណ:</div><div class="dotted-line"></div></div>
+    </div>
+
+    <div class="section-header">សេចក្តីលម្អិតនៃការទូទាត់ (Payment Summary)</div>
+    <table class="summary-table">
+        <thead>
+            <tr><th>ពិពណ៌នា (Description)</th><th style="text-align: right;">ចំនួនទឹកប្រាក់ (Amount)</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>តម្លៃសរុបពេញ (Total Full Price)</td><td class="amount-bold">$1,300.00</td></tr>
+            <tr><td>ប្រាក់កក់ / បង់មុន (Upfront Paid / Deposit) [09/08/2026]</td><td class="amount-green">-$100.00</td></tr>
+            <tr><td><strong>ប្រាក់នៅខ្វះសរុប (Remaining Balance)</strong></td><td class="amount-red" id="remainingBalance">$1,200.00</td></tr>
+        </tbody>
+    </table>
+
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="section-header">កាលវិភាគបង់ប្រាក់ប្រចាំខែ (8 ខែ × $150/ខែ)</div>
+        <div id="saveStatus" class="status-msg"></div>
+    </div>
+
+    <table class="schedule-table">
+        <thead>
+            <tr>
+                <th style="width: 8%;">លើកទី</th>
+                <th style="width: 30%;">កាលបរិច្ឆេទត្រូវបង់ (Due Date)</th>
+                <th style="width: 20%;">ទឹកប្រាក់ (Amount)</th>
+                <th style="width: 42%;">ស្ថានភាព (Status)</th>
+            </tr>
+        </thead>
+        <tbody id="installmentRows">
+            <!-- បង្កើតជួរតារាងដោយ JavaScript -->
+        </tbody>
+    </table>
+
+    <div class="signatures-container">
+        <div><div class="sig-title-kh">ហត្ថលេខាអតិថិជន</div><div class="sig-title-en">Customer Signature</div><div class="sig-line"></div></div>
+        <div><div class="sig-title-kh">ហត្ថលេខាអ្នកទទួលប្រាក់</div><div class="sig-title-en">Receiver Signature</div><div class="sig-line"></div></div>
+    </div>
+
+    <div class="footer-note">សូមអរគុណសម្រាប់ការប្រើប្រាស់សេវាកម្មរបស់យើងខ្ញុំ! / Thank you for your business!</div>
+
+    <script>
+        // កាលបរិច្ឆេទ Due Date សម្រាប់ខែនីមួយៗ (ទម្រង់ YYYY-MM-DD ដើម្បីស្រួលប្រៀបធៀប)
+        const installmentsData = [
+            { dateStr: "09/09/2026", dueDate: "2026-09-09" },
+            { dateStr: "09/10/2026", dueDate: "2026-10-09" },
+            { dateStr: "09/11/2026", dueDate: "2026-11-09" },
+            { dateStr: "09/12/2026", dueDate: "2026-12-09" },
+            { dateStr: "09/01/2027", dueDate: "2027-01-09" },
+            { dateStr: "09/02/2027", dueDate: "2027-02-09" },
+            { dateStr: "09/03/2027", dueDate: "2027-03-09" },
+            { dateStr: "09/04/2027", dueDate: "2027-04-09" }
+        ];
+
+        let currentInstallmentStatus = {};
+
+        // Render តារាងដំបូង
+        const tbody = document.getElementById('installmentRows');
+        installmentsData.forEach((item, index) => {
+            let num = index + 1;
+            tbody.innerHTML += `
+                <tr>
+                    <td>${num}</td>
+                    <td>${item.dateStr}</td>
+                    <td><strong>$150.00</strong></td>
+                    <td>
+                        <div class="checkbox-container">
+                            <label class="checkbox-label disabled" id="label_unpaid_${num}" style="color: #e74c3c;">
+                                <input type="radio" id="unpaid_${num}" name="item_${num}" value="UNPAID" checked disabled> មិនទាន់បង់
+                            </label>
+                            <label class="checkbox-label disabled" id="label_paid_${num}" style="color: #27ae60;">
+                                <input type="radio" id="paid_${num}" name="item_${num}" value="PAID" disabled onchange="payMonth(${num})"> រួចរាល់
+                            </label>
+                        </div>
+                        <div id="note_${num}" class="note-msg"></div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        // Function ទាញ Data និងពិនិត្យមើលកាលបរិច្ឆេទថ្ងៃនេះ (Date Validation)
+        function loadInvoiceData() {
+            fetch('http://localhost:3000/api/get-invoice?invoice_id=INV-2026-001')
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === 'success' && res.data.installments) {
+                    currentInstallmentStatus = res.data.installments;
+                    
+                    // យកថ្ងៃខែឆ្នាំបច្ចុប្បន្ន ( Today's Date )
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // សម្រួល time ឱ្យស្មើ 00:00:00
+
+                    let firstUnpaidFound = false;
+
+                    for (let i = 1; i <= 8; i++) {
+                        const unpaidRadio = document.getElementById(`unpaid_${i}`);
+                        const paidRadio = document.getElementById(`paid_${i}`);
+                        const unpaidLabel = document.getElementById(`label_unpaid_${i}`);
+                        const paidLabel = document.getElementById(`label_paid_${i}`);
+                        const noteDiv = document.getElementById(`note_${i}`);
+
+                        const dueDate = new Date(installmentsData[i - 1].dueDate);
+                        dueDate.setHours(0, 0, 0, 0);
+
+                        noteDiv.innerText = ''; // Reset មុន
+
+                        if (currentInstallmentStatus[`month_${i}`] === 'PAID') {
+                            // ១. ប្រសិនបើបង់រួចហើយ ➔ គ្រីស "រួចរាល់" + Disabled
+                            paidRadio.checked = true;
+                            unpaidRadio.disabled = true;
+                            paidRadio.disabled = true;
+                            unpaidLabel.classList.add('disabled');
+                            paidLabel.classList.add('disabled');
+                        } else {
+                            // ២. ប្រសិនបើមិនទាន់បង់ ➔ គ្រីស "មិនទាន់បង់"
+                            unpaidRadio.checked = true;
+                            unpaidRadio.disabled = true;
+
+                            if (!firstUnpaidFound) {
+                                // ពិនិត្យថា តើថ្ងៃនេះដល់ ឬហួស Due Date នៃខែនេះ ឬនៅ?
+                                if (today >= dueDate) {
+                                    // ដល់ថ្ងៃបង់ហើយ ➔ បើកឱ្យចុចបាន
+                                    paidRadio.disabled = false;
+                                    paidLabel.classList.remove('disabled');
+                                } else {
+                                    // មិនទាន់ដល់ថ្ងៃបង់ទេ ➔ បិទមិនឱ្យចុច + បង្ហាញសារប្រាប់
+                                    paidRadio.disabled = true;
+                                    paidLabel.classList.add('disabled');
+                                    noteDiv.innerText = `🔒 មិនទាន់ដល់ថ្ងៃបង់ (ទាល់តែថ្ងៃទី ${installmentsData[i - 1].dateStr})`;
+                                }
+                                firstUnpaidFound = true;
+                            } else {
+                                // ខែបន្ទាប់បន្សំដែលមិនទាន់ដល់វេន ➔ បិទទាំងអស់
+                                paidRadio.disabled = true;
+                                paidLabel.classList.add('disabled');
+                            }
+                        }
+                    }
+
+                    // បង្ហាញប្រាក់នៅខ្វះសរុប
+                    let currentBalance = parseFloat(res.data.remaining_balance);
+                    document.getElementById('remainingBalance').innerText = '$' + currentBalance.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                }
+            })
+            .catch(err => console.error('Error fetching data:', err));
+        }
+
+        // Function ពេលចុចបង់ប្រាក់
+        function payMonth(monthNum) {
+            const statusDiv = document.getElementById('saveStatus');
+            statusDiv.style.color = '#d35400';
+            statusDiv.innerText = '⏳ កំពុង រក្សាទុក...';
+
+            fetch('http://localhost:3000/api/mark-as-paid', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    invoice_id: 'INV-2026-001',
+                    month_number: monthNum
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    statusDiv.style.color = '#27ae60';
+                    statusDiv.innerText = '✓ បង់ប្រាក់រួចរាល់!';
+                    setTimeout(() => { statusDiv.innerText = ''; }, 3000);
+                    
+                    loadInvoiceData();
+                } else {
+                    alert('មានបញ្ហាក្នុងការ Save៖ ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Error saving:', err);
+                alert('មិនអាចភ្ជាប់ទៅ Server បានទេ!');
+            });
+        }
+
+        window.onload = loadInvoiceData;
+    </script>
+</body>
+</html>
