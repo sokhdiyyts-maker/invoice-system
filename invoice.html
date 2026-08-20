@@ -107,7 +107,7 @@
     <div class="footer-note">សូមអរគុណសម្រាប់ការប្រើប្រាស់សេវាកម្មរបស់យើងខ្ញុំ! / Thank you for your business!</div>
 
     <script>
-        // កាលបរិច្ឆេទ Due Date សម្រាប់ខែនីមួយៗ (ទម្រង់ YYYY-MM-DD ដើម្បីស្រួលប្រៀបធៀប)
+        // កាលបរិច្ឆេទ Due Date សម្រាប់ខែនីមួយៗ
         const installmentsData = [
             { dateStr: "09/09/2026", dueDate: "2026-09-09" },
             { dateStr: "09/10/2026", dueDate: "2026-10-09" },
@@ -147,15 +147,14 @@
 
         // Function ទាញ Data និងពិនិត្យមើលកាលបរិច្ឆេទថ្ងៃនេះ (Date Validation)
         function loadInvoiceData() {
-            fetch('http://localhost:3000/api/get-invoice?invoice_id=INV-2026-001')
+            fetch('/api/get-invoice?invoice_id=INV-2026-001')
             .then(res => res.json())
             .then(res => {
-                if (res.status === 'success' && res.data.installments) {
+                if ((res.status === 'success' || res.data) && res.data.installments) {
                     currentInstallmentStatus = res.data.installments;
                     
-                    // យកថ្ងៃខែឆ្នាំបច្ចុប្បន្ន ( Today's Date )
                     const today = new Date();
-                    today.setHours(0, 0, 0, 0); // សម្រួល time ឱ្យស្មើ 00:00:00
+                    today.setHours(0, 0, 0, 0);
 
                     let firstUnpaidFound = false;
 
@@ -169,42 +168,35 @@
                         const dueDate = new Date(installmentsData[i - 1].dueDate);
                         dueDate.setHours(0, 0, 0, 0);
 
-                        noteDiv.innerText = ''; // Reset មុន
+                        noteDiv.innerText = ''; 
 
                         if (currentInstallmentStatus[`month_${i}`] === 'PAID') {
-                            // ១. ប្រសិនបើបង់រួចហើយ ➔ គ្រីស "រួចរាល់" + Disabled
                             paidRadio.checked = true;
                             unpaidRadio.disabled = true;
                             paidRadio.disabled = true;
                             unpaidLabel.classList.add('disabled');
                             paidLabel.classList.add('disabled');
                         } else {
-                            // ២. ប្រសិនបើមិនទាន់បង់ ➔ គ្រីស "មិនទាន់បង់"
                             unpaidRadio.checked = true;
                             unpaidRadio.disabled = true;
 
                             if (!firstUnpaidFound) {
-                                // ពិនិត្យថា តើថ្ងៃនេះដល់ ឬហួស Due Date នៃខែនេះ ឬនៅ?
                                 if (today >= dueDate) {
-                                    // ដល់ថ្ងៃបង់ហើយ ➔ បើកឱ្យចុចបាន
                                     paidRadio.disabled = false;
                                     paidLabel.classList.remove('disabled');
                                 } else {
-                                    // មិនទាន់ដល់ថ្ងៃបង់ទេ ➔ បិទមិនឱ្យចុច + បង្ហាញសារប្រាប់
                                     paidRadio.disabled = true;
                                     paidLabel.classList.add('disabled');
                                     noteDiv.innerText = `🔒 មិនទាន់ដល់ថ្ងៃបង់ (ទាល់តែថ្ងៃទី ${installmentsData[i - 1].dateStr})`;
                                 }
                                 firstUnpaidFound = true;
                             } else {
-                                // ខែបន្ទាប់បន្សំដែលមិនទាន់ដល់វេន ➔ បិទទាំងអស់
                                 paidRadio.disabled = true;
                                 paidLabel.classList.add('disabled');
                             }
                         }
                     }
 
-                    // បង្ហាញប្រាក់នៅខ្វះសរុប
                     let currentBalance = parseFloat(res.data.remaining_balance);
                     document.getElementById('remainingBalance').innerText = '$' + currentBalance.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
                 }
@@ -218,7 +210,7 @@
             statusDiv.style.color = '#d35400';
             statusDiv.innerText = '⏳ កំពុង រក្សាទុក...';
 
-            fetch('http://localhost:3000/api/mark-as-paid', {
+            fetch('/api/mark-as-paid', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
