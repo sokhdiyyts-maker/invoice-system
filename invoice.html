@@ -176,12 +176,10 @@
                     unpaidRadio.disabled = true;
 
                     if (!firstUnpaidFound) {
-                        // បើកឱ្យចុចបានភ្លាមៗ ដោយមិនឆែក Due Date
                         paidRadio.disabled = false;
                         paidLabel.classList.remove('disabled');
                         firstUnpaidFound = true;
                     } else {
-                        // ខ្ទាស់ខែបន្ទាប់ៗរហូតដល់ខែមុនបង់រួច
                         paidRadio.disabled = true;
                         paidLabel.classList.add('disabled');
                     }
@@ -207,7 +205,9 @@
                     }
                 }
             })
-            .catch(err => console.error('Using fallback UI rendering:', err));
+            .catch(err => {
+                console.warn('Backend API connection note:', err);
+            });
         }
 
         function payMonth(monthNum) {
