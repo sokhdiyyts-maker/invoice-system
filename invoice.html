@@ -143,7 +143,56 @@
             `;
         });
 
+        function updateUIState() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let firstUnpaidFound = false;
+
+            for (let i = 1; i <= 8; i++) {
+                const unpaidRadio = document.getElementById(`unpaid_${i}`);
+                const paidRadio = document.getElementById(`paid_${i}`);
+                const unpaidLabel = document.getElementById(`label_unpaid_${i}`);
+                const paidLabel = document.getElementById(`label_paid_${i}`);
+                const noteDiv = document.getElementById(`note_${i}`);
+
+                const dueDate = new Date(installmentsData[i - 1].dueDate);
+                dueDate.setHours(0, 0, 0, 0);
+
+                if (noteDiv) noteDiv.innerText = ''; 
+
+                if (currentInstallmentStatus[`month_${i}`] === 'PAID') {
+                    paidRadio.checked = true;
+                    unpaidRadio.disabled = true;
+                    paidRadio.disabled = true;
+                    unpaidLabel.classList.add('disabled');
+                    paidLabel.classList.add('disabled');
+                } else {
+                    unpaidRadio.checked = true;
+                    unpaidRadio.disabled = true;
+
+                    if (!firstUnpaidFound) {
+                        if (today >= dueDate) {
+                            paidRadio.disabled = false;
+                            paidLabel.classList.remove('disabled');
+                        } else {
+                            paidRadio.disabled = true;
+                            paidLabel.classList.add('disabled');
+                            if (noteDiv) noteDiv.innerText = `🔒 មិនទាន់ដល់ថ្ងៃបង់ (ទាល់តែថ្ងៃទី ${installmentsData[i - 1].dateStr})`;
+                        }
+                        firstUnpaidFound = true;
+                    } else {
+                        paidRadio.disabled = true;
+                        paidLabel.classList.add('disabled');
+                    }
+                }
+            }
+        }
+
         function loadInvoiceData() {
+            // Run UI logic ដំបូងភ្លាមៗដោយមិនបាច់ចាំ API 
+            updateUIState();
+
             fetch('/api/get-invoice?invoice_id=INV-2026-001')
             .then(res => res.json())
             .then(res => {
@@ -151,50 +200,7 @@
 
                 if (invoiceData && invoiceData.installments) {
                     currentInstallmentStatus = invoiceData.installments;
-                    
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-
-                    let firstUnpaidFound = false;
-
-                    for (let i = 1; i <= 8; i++) {
-                        const unpaidRadio = document.getElementById(`unpaid_${i}`);
-                        const paidRadio = document.getElementById(`paid_${i}`);
-                        const unpaidLabel = document.getElementById(`label_unpaid_${i}`);
-                        const paidLabel = document.getElementById(`label_paid_${i}`);
-                        const noteDiv = document.getElementById(`note_${i}`);
-
-                        const dueDate = new Date(installmentsData[i - 1].dueDate);
-                        dueDate.setHours(0, 0, 0, 0);
-
-                        if (noteDiv) noteDiv.innerText = ''; 
-
-                        if (currentInstallmentStatus[`month_${i}`] === 'PAID') {
-                            paidRadio.checked = true;
-                            unpaidRadio.disabled = true;
-                            paidRadio.disabled = true;
-                            unpaidLabel.classList.add('disabled');
-                            paidLabel.classList.add('disabled');
-                        } else {
-                            unpaidRadio.checked = true;
-                            unpaidRadio.disabled = true;
-
-                            if (!firstUnpaidFound) {
-                                if (today >= dueDate) {
-                                    paidRadio.disabled = false;
-                                    paidLabel.classList.remove('disabled');
-                                } else {
-                                    paidRadio.disabled = true;
-                                    paidLabel.classList.add('disabled');
-                                    if (noteDiv) noteDiv.innerText = `🔒 មិនទាន់ដល់ថ្ងៃបង់ (ទាល់តែថ្ងៃទី ${installmentsData[i - 1].dateStr})`;
-                                }
-                                firstUnpaidFound = true;
-                            } else {
-                                paidRadio.disabled = true;
-                                paidLabel.classList.add('disabled');
-                            }
-                        }
-                    }
+                    updateUIState();
 
                     if (invoiceData.remaining_balance !== undefined) {
                         let currentBalance = parseFloat(invoiceData.remaining_balance);
@@ -202,7 +208,9 @@
                     }
                 }
             })
-            .catch(err => console.error('Error fetching data:', err));
+            .catch(err => {
+                console.error('API Error, using client logic fallback:', err);
+            });
         }
 
         function payMonth(monthNum) {
