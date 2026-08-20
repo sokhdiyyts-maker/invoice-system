@@ -66,8 +66,8 @@ app.post('/api/mark-as-paid', (req, res) => {
     });
 });
 
-// Default Catch-all Route (កែប្រែត្រង់នេះដើម្បីការពារ Error)
-app.get('(.*)', (req, res) => {
+// ✅ Catch-all Route សម្រាប់ Express គ្រប់ Version (សុវត្ថិភាព ១០០%)
+app.use((req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'invoice.html'), (err) => {
         if (err) {
             res.sendFile(path.join(__dirname, 'invoice.html'));
