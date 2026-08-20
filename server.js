@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files 
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Database ក្លែងក្លាយ (In-Memory Database)
 let invoiceData = {
@@ -66,9 +66,13 @@ app.post('/api/mark-as-paid', (req, res) => {
     });
 });
 
-// Default Route
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'invoice.html'));
+// Default Catch-all Route (កែប្រែត្រង់នេះដើម្បីការពារ Error)
+app.get('(.*)', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'invoice.html'), (err) => {
+        if (err) {
+            res.sendFile(path.join(__dirname, 'invoice.html'));
+        }
+    });
 });
 
 app.listen(PORT, () => {
