@@ -1,24 +1,31 @@
 const express = require('express');
 const sql = require('mssql');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
 app.use(express.static(__dirname));
 
-// ការកំណត់ភ្ជាប់ទៅ SQL Server
+// ការកំណត់ភ្ជាប់ទៅ SQL Server (ទាញពី Environment Variables ពេលឡើង Online)
 const dbConfig = {
-    user: 'sa',
-    password: '123', // ⚠️ កុំភ្លេចដូរទៅជា Password ពិតប្រាកដរបស់អ្នក
-    server: 'DESKTOP-9Q444NP', 
-    database: 'invoice_db',
+    user: process.env.DB_USER || 'sa',
+    password: process.env.DB_PASSWORD || '123',
+    server: process.env.DB_SERVER || 'DESKTOP-9Q444NP', 
+    database: process.env.DB_NAME || 'invoice_db',
     options: {
-        encrypt: false,
+        encrypt: process.env.DB_ENCRYPT === 'true' || false,
         trustServerCertificate: true
     }
 };
+
+// Route ដើម (Home Route) បង្ហាញ file invoice.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'invoice.html'));
+});
 
 // ១. API សម្រាប់ Update ទិន្នន័យទូទៅ
 app.post('/api/update-invoice', async (req, res) => {
@@ -55,7 +62,7 @@ app.post('/api/update-invoice', async (req, res) => {
     }
 });
 
-// ២. API សម្រាប់ Mark ថា PAID ដោយស្វ័យប្រវត្តិ (សម្រាប់ការតេស្ត / QR Code Payment)
+// ២. API សម្រាប់ Mark ថា PAID ដោយស្វ័យប្រវត្តិ
 app.post('/api/mark-as-paid', async (req, res) => {
     try {
         const { invoice_id, month_number } = req.body;
@@ -70,16 +77,13 @@ app.post('/api/mark-as-paid', async (req, res) => {
             let row = result.recordset[0];
             installments = JSON.parse(row.installments_status);
         } else {
-            // ប្រសិនបើមិនទាន់មាន Data ទេ បង្កើត status default ឱ្យ 8 ខែ
             for (let i = 1; i <= 8; i++) {
                 installments[`month_${i}`] = 'UNPAID';
             }
         }
 
-        // ប្តូរខែដែលបានកំណត់ទៅជា PAID
         installments[`month_${month_number}`] = 'PAID';
 
-        // គណនាប្រាក់ឡើងវិញ
         let paidCount = Object.values(installments).filter(status => status === 'PAID').length;
         let totalPaid = paidCount * 150;
         let remainingBalance = 1200 - totalPaid;
@@ -139,10 +143,6 @@ app.get('/api/get-invoice', async (req, res) => {
     }
 });
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/invoice.html');
-});
-
-app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
