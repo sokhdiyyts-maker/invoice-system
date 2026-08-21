@@ -4,347 +4,239 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>វិក្កយបត្រ / INVOICE</title>
-    <!-- Google Fonts: Kantumruy Pro & Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
     <style>
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --bg-main: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --success-bg: #dcfce7;
-            --success-text: #15803d;
-            --danger-bg: #fee2e2;
-            --danger-text: #b91c1c;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap');
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        * { box-sizing: border-box; }
         body {
-            font-family: 'Kantumruy Pro', 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .invoice-card {
-            background: var(--card-bg);
-            max-width: 850px;
-            width: 100%;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-            border: 1px solid var(--border-color);
-            padding: 40px;
-        }
-
-        /* Header UI */
-        .invoice-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding-bottom: 24px;
-            border-bottom: 2px dashed var(--border-color);
-            margin-bottom: 30px;
-        }
-
-        .brand-info h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 4px;
-        }
-
-        .invoice-badge {
-            background: #eff6ff;
-            color: var(--primary);
-            padding: 6px 14px;
-            border-radius: 20px;
+            font-family: 'Kantumruy Pro', sans-serif;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 30px 20px;
+            max-width: 800px;
+            margin: auto;
             font-size: 13px;
-            font-weight: 600;
-            display: inline-block;
         }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin: 28px 0 14px 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .section-title::before {
-            content: '';
-            width: 4px;
-            height: 18px;
-            background: var(--primary);
-            border-radius: 2px;
-            display: inline-block;
-        }
-
-        /* Table Design */
-        .custom-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            margin-bottom: 10px;
-        }
-
-        .custom-table th {
-            background-color: #f1f5f9;
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 13px;
-            text-transform: uppercase;
-            padding: 14px 16px;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .custom-table td {
-            padding: 14px 16px;
-            text-align: center;
-            font-size: 14px;
-            border-bottom: 1px solid var(--border-color);
-            background-color: #fff;
-        }
-
-        .custom-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .custom-table tr:hover td {
-            background-color: #f8fafc;
-        }
-
-        /* Modern Custom Radio Buttons */
-        .status-group {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .status-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
-        }
-
-        .status-btn input { display: none; }
-
-        .status-unpaid {
-            background-color: #f1f5f9;
-            color: var(--text-muted);
-        }
-
-        .status-unpaid.active {
-            background-color: var(--danger-bg);
-            color: var(--danger-text);
-            font-weight: 600;
-        }
-
-        .status-paid {
-            background-color: #f1f5f9;
-            color: var(--text-muted);
-        }
-
-        .status-paid.active {
-            background-color: var(--success-bg);
-            color: var(--success-text);
-            font-weight: 600;
-        }
-
-        /* Signatures */
-        .signature-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-top: 50px;
-            padding-top: 20px;
-        }
-
-        .sig-card {
-            text-align: center;
-        }
-
-        .sig-line {
-            margin-top: 70px;
-            border-top: 2px dashed var(--border-color);
-        }
-
-        .text-left { text-align: left !important; }
-        .text-right { text-align: right !important; }
-        .font-bold { font-weight: 600; }
-        .price-text { font-family: 'Inter', sans-serif; font-weight: 600; }
+        .header-container { display: flex; justify-content: space-between; align-items: flex-end; }
+        .main-title { font-size: 26px; font-weight: 800; color: #0b1e36; margin: 0; }
+        .invoice-number { font-size: 15px; font-weight: 700; color: #0070c0; text-align: right; }
+        .divider-line { width: 100%; height: 3px; background-color: #0070c0; margin: 8px 0 25px 0; }
+        .info-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 30px; margin-bottom: 25px; }
+        .info-label { font-weight: 700; }
+        .dotted-line { border-bottom: 1px dotted #a0a0a0; height: 18px; }
+        .section-header { font-size: 14px; font-weight: 700; color: #0b1e36; margin: 20px 0 10px 0; padding-left: 8px; border-left: 4px solid #0070c0; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .summary-table th { background-color: #0b132b; color: #fff; padding: 10px; text-align: left; }
+        .summary-table td { padding: 10px; border: 1px solid #e2e8f0; }
+        .amount-green { color: #27ae60; font-weight: 700; text-align: right; }
+        .amount-red { color: #e74c3c; font-weight: 700; text-align: right; }
+        .amount-bold { font-weight: 700; text-align: right; }
+        .schedule-table th, .schedule-table td { padding: 10px; border: 1px solid #cbd5e1; text-align: center; }
+        .schedule-table th { background-color: #f1f5f9; }
+        .checkbox-container { display: flex; justify-content: center; gap: 15px; }
+        .checkbox-label { display: flex; align-items: center; gap: 5px; font-weight: 600; cursor: pointer; }
+        .checkbox-label.disabled { cursor: not-allowed; opacity: 0.5; }
+        .signatures-container { display: flex; justify-content: space-around; margin: 50px 0 20px 0; text-align: center; }
+        .sig-title-kh { font-weight: 700; }
+        .sig-title-en { color: #64748b; font-size: 11px; margin-bottom: 50px; }
+        .sig-line { border-bottom: 1px dotted #94a3b8; width: 200px; margin: 0 auto; }
+        .footer-note { text-align: center; color: #64748b; font-size: 11px; margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
+        .status-msg { font-size: 12px; font-weight: bold; }
+        .note-msg { font-size: 11px; color: #e67e22; margin-top: 4px; }
     </style>
 </head>
 <body>
 
-<div class="invoice-card">
-    <div class="invoice-header">
-        <div class="brand-info">
-            <h2>វិក្កយបត្រ / INVOICE</h2>
-            <p style="color: var(--text-muted); font-size: 13px;">ការបង់ប្រាក់រំលស់ប្រចាំខែ</p>
+    <div class="header-container">
+        <div>
+            <h1 class="main-title">វិក្កយបត្រ / INVOICE</h1>
+            <div style="color: #7f8c8d; font-size: 13px;">ការបង់ប្រាក់រំលស់ប្រចាំខែ (Monthly Installment Invoice)</div>
         </div>
-        <div class="invoice-badge">#INV-2026-001</div>
+        <div>
+            <div class="invoice-number">លេខវិក្កយបត្រ: #INV-2026-001</div>
+            <div style="font-size: 12px; color: #555; text-align: right;">កាលបរិច្ឆេទបង្កើត: 09/08/2026</div>
+        </div>
     </div>
 
-    <div class="section-title">សេចក្តីលម្អិតនៃការទូទាត់ (Payment Summary)</div>
-    <table class="custom-table">
+    <div class="divider-line"></div>
+
+    <div class="info-container">
+        <div><div class="info-label">ឈ្មោះអតិថិជន:</div><div class="dotted-line"></div></div>
+        <div><div class="info-label">លេខទូរសព្ទ:</div><div class="dotted-line"></div></div>
+        <div><div class="info-label">អាសយដ្ឋាន:</div><div class="dotted-line"></div></div>
+        <div><div class="info-label">អត្តសញ្ញាណប័ណ្ណ:</div><div class="dotted-line"></div></div>
+    </div>
+
+    <div class="section-header">សេចក្តីលម្អិតនៃការទូទាត់ (Payment Summary)</div>
+    <table class="summary-table">
         <thead>
-            <tr>
-                <th class="text-left">ពិពណ៌នា (Description)</th>
-                <th class="text-right">ចំនួនទឹកប្រាក់ (Amount)</th>
-            </tr>
+            <tr><th>ពិពណ៌នា (Description)</th><th style="text-align: right;">ចំនួនទឹកប្រាក់ (Amount)</th></tr>
         </thead>
         <tbody>
-            <tr>
-                <td class="text-left">តម្លៃសរុបពេញ (Total Full Price)</td>
-                <td class="text-right price-text font-bold">$1,300.00</td>
-            </tr>
-            <tr>
-                <td class="text-left">ប្រាក់កក់ / បង់មុន (Upfront Paid / Deposit) <span style="color: var(--text-muted); font-size: 12px;">[09/08/2026]</span></td>
-                <td class="text-right price-text font-bold" style="color: var(--success-text);">-$100.00</td>
-            </tr>
-            <tr style="background-color: #f8fafc;">
-                <td class="text-left font-bold">ប្រាក់នៅខ្វះសរុប (Remaining Balance)</td>
-                <td class="text-right price-text font-bold" style="color: var(--danger-text); font-size: 16px;" id="remainingBalance">$1,200.00</td>
-            </tr>
+            <tr><td>តម្លៃសរុបពេញ (Total Full Price)</td><td class="amount-bold">$1,300.00</td></tr>
+            <tr><td>ប្រាក់កក់ / បង់មុន (Upfront Paid / Deposit) [09/08/2026]</td><td class="amount-green">-$100.00</td></tr>
+            <tr><td><strong>ប្រាក់នៅខ្វះសរុប (Remaining Balance)</strong></td><td class="amount-red" id="remainingBalance">$1,200.00</td></tr>
         </tbody>
     </table>
 
-    <div class="section-title">កាលវិភាគបង់ប្រាក់ប្រចាំខែ (8 ខែ × $150/ខែ)</div>
-    <table class="custom-table">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="section-header">កាលវិភាគបង់ប្រាក់ប្រចាំខែ (8 ខែ × $150/ខែ)</div>
+        <div id="saveStatus" class="status-msg"></div>
+    </div>
+
+    <table class="schedule-table">
         <thead>
             <tr>
-                <th style="width: 10%;">លើកទី</th>
-                <th style="width: 30%;">កាលបរិច្ឆេទ (Due Date)</th>
-                <th style="width: 25%;">ទឹកប្រាក់ (Amount)</th>
-                <th style="width: 35%;">ស្ថានភាព (Status)</th>
+                <th style="width: 8%;">លើកទី</th>
+                <th style="width: 30%;">កាលបរិច្ឆេទត្រូវបង់ (Due Date)</th>
+                <th style="width: 20%;">ទឹកប្រាក់ (Amount)</th>
+                <th style="width: 42%;">ស្ថានភាព (Status)</th>
             </tr>
         </thead>
-        <tbody id="installmentTable">
-            <!-- Rendered by JS -->
+        <tbody id="installmentRows">
+            <!-- បង្កើតជួរតារាងដោយ JavaScript -->
         </tbody>
     </table>
 
-    <div class="signature-grid">
-        <div class="sig-card">
-            <p class="font-bold">ហត្ថលេខាអតិថិជន</p>
-            <p style="color: var(--text-muted); font-size: 12px;">Customer Signature</p>
-            <div class="sig-line"></div>
-        </div>
-        <div class="sig-card">
-            <p class="font-bold">ហត្ថលេខាអ្នកទទួលប្រាក់</p>
-            <p style="color: var(--text-muted); font-size: 12px;">Receiver Signature</p>
-            <div class="sig-line"></div>
-        </div>
+    <div class="signatures-container">
+        <div><div class="sig-title-kh">ហត្ថលេខាអតិថិជន</div><div class="sig-title-en">Customer Signature</div><div class="sig-line"></div></div>
+        <div><div class="sig-title-kh">ហត្ថលេខាអ្នកទទួលប្រាក់</div><div class="sig-title-en">Receiver Signature</div><div class="sig-line"></div></div>
     </div>
-</div>
 
-<script>
-    const startDate = new Date(2026, 7, 9); // 09/08/2026
+    <div class="footer-note">សូមអរគុណសម្រាប់ការប្រើប្រាស់សេវាកម្មរបស់យើងខ្ញុំ! / Thank you for your business!</div>
 
-    function getDueDate(monthIndex) {
-        let dueDate = new Date(startDate);
-        dueDate.setMonth(startDate.getMonth() + monthIndex);
-        
-        let day = String(dueDate.getDate()).padStart(2, '0');
-        let month = String(dueDate.getMonth() + 1).padStart(2, '0');
-        let year = dueDate.getFullYear();
-        
-        return `${day}/${month}/${year}`;
-    }
+    <script>
+        // កាលបរិច្ឆេទ Due Date សម្រាប់ខែនីមួយៗ
+        const installmentsData = [
+            { dateStr: "09/09/2026", dueDate: "2026-09-09" },
+            { dateStr: "09/10/2026", dueDate: "2026-10-09" },
+            { dateStr: "09/11/2026", dueDate: "2026-11-09" },
+            { dateStr: "09/12/2026", dueDate: "2026-12-09" },
+            { dateStr: "09/01/2027", dueDate: "2027-01-09" },
+            { dateStr: "09/02/2027", dueDate: "2027-02-09" },
+            { dateStr: "09/03/2027", dueDate: "2027-03-09" },
+            { dateStr: "09/04/2027", dueDate: "2027-04-09" }
+        ];
 
-    async function loadInvoice() {
-        try {
-            const res = await fetch('/api/get-invoice');
-            const result = await res.json();
-            if (result.status === 'success') {
-                renderTable(result.data);
-            }
-        } catch (err) {
-            console.error("Error loading invoice:", err);
-        }
-    }
+        let currentInstallmentStatus = {};
 
-    function renderTable(data) {
-        const tbody = document.getElementById('installmentTable');
-        document.getElementById('remainingBalance').innerText = `$${data.remaining_balance.toFixed(2)}`;
-        
-        tbody.innerHTML = '';
-
-        for (let i = 1; i <= 8; i++) {
-            const monthKey = `month_${i}`;
-            const isPaid = data.installments[monthKey] === 'PAID';
-            const dueDateStr = getDueDate(i);
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><span style="font-weight: 600; color: var(--text-muted);">${i}</span></td>
-                <td><strong class="price-text">${dueDateStr}</strong></td>
-                <td class="price-text font-bold">$150.00</td>
-                <td>
-                    <div class="status-group">
-                        <label class="status-btn status-unpaid ${!isPaid ? 'active' : ''}">
-                            <input type="radio" name="status_${i}" ${!isPaid ? 'checked' : ''} disabled>
-                            ✕ មិនទាន់បង់
-                        </label>
-                        <label class="status-btn status-paid ${isPaid ? 'active' : ''}">
-                            <input type="radio" name="status_${i}" ${isPaid ? 'checked' : ''} onclick="markAsPaid(${i})">
-                            ✓ រួចរាល់
-                        </label>
-                    </div>
-                </td>
+        // Render តារាងដំបូង
+        const tbody = document.getElementById('installmentRows');
+        installmentsData.forEach((item, index) => {
+            let num = index + 1;
+            tbody.innerHTML += `
+                <tr>
+                    <td>${num}</td>
+                    <td>${item.dateStr}</td>
+                    <td><strong>$150.00</strong></td>
+                    <td>
+                        <div class="checkbox-container">
+                            <label class="checkbox-label disabled" id="label_unpaid_${num}" style="color: #e74c3c;">
+                                <input type="radio" id="unpaid_${num}" name="item_${num}" value="UNPAID" checked disabled> មិនទាន់បង់
+                            </label>
+                            <label class="checkbox-label disabled" id="label_paid_${num}" style="color: #27ae60;">
+                                <input type="radio" id="paid_${num}" name="item_${num}" value="PAID" disabled onchange="payMonth(${num})"> រួចរាល់
+                            </label>
+                        </div>
+                        <div id="note_${num}" class="note-msg"></div>
+                    </td>
+                </tr>
             `;
-            tbody.appendChild(tr);
-        }
-    }
+        });
 
-    async function markAsPaid(monthNumber) {
-        try {
-            const res = await fetch('/api/mark-as-paid', {
+        // Function ទាញ Data និងពិនិត្យមើលកាលបរិច្ឆេទថ្ងៃនេះ (Date Validation)
+        function loadInvoiceData() {
+            fetch('/api/get-invoice?invoice_id=INV-2026-001')
+            .then(res => res.json())
+            .then(res => {
+                if ((res.status === 'success' || res.data) && res.data.installments) {
+                    currentInstallmentStatus = res.data.installments;
+                    
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    let firstUnpaidFound = false;
+
+                    for (let i = 1; i <= 8; i++) {
+                        const unpaidRadio = document.getElementById(`unpaid_${i}`);
+                        const paidRadio = document.getElementById(`paid_${i}`);
+                        const unpaidLabel = document.getElementById(`label_unpaid_${i}`);
+                        const paidLabel = document.getElementById(`label_paid_${i}`);
+                        const noteDiv = document.getElementById(`note_${i}`);
+
+                        const dueDate = new Date(installmentsData[i - 1].dueDate);
+                        dueDate.setHours(0, 0, 0, 0);
+
+                        noteDiv.innerText = ''; 
+
+                        if (currentInstallmentStatus[`month_${i}`] === 'PAID') {
+                            paidRadio.checked = true;
+                            unpaidRadio.disabled = true;
+                            paidRadio.disabled = true;
+                            unpaidLabel.classList.add('disabled');
+                            paidLabel.classList.add('disabled');
+                        } else {
+                            unpaidRadio.checked = true;
+                            unpaidRadio.disabled = true;
+
+                            if (!firstUnpaidFound) {
+                                if (today >= dueDate) {
+                                    paidRadio.disabled = false;
+                                    paidLabel.classList.remove('disabled');
+                                } else {
+                                    paidRadio.disabled = true;
+                                    paidLabel.classList.add('disabled');
+                                    noteDiv.innerText = `🔒 មិនទាន់ដល់ថ្ងៃបង់ (ទាល់តែថ្ងៃទី ${installmentsData[i - 1].dateStr})`;
+                                }
+                                firstUnpaidFound = true;
+                            } else {
+                                paidRadio.disabled = true;
+                                paidLabel.classList.add('disabled');
+                            }
+                        }
+                    }
+
+                    let currentBalance = parseFloat(res.data.remaining_balance);
+                    document.getElementById('remainingBalance').innerText = '$' + currentBalance.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                }
+            })
+            .catch(err => console.error('Error fetching data:', err));
+        }
+
+        // Function ពេលចុចបង់ប្រាក់
+        function payMonth(monthNum) {
+            const statusDiv = document.getElementById('saveStatus');
+            statusDiv.style.color = '#d35400';
+            statusDiv.innerText = '⏳ កំពុង រក្សាទុក...';
+
+            fetch('/api/mark-as-paid', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ month_number: monthNumber })
+                body: JSON.stringify({
+                    invoice_id: 'INV-2026-001',
+                    month_number: monthNum
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    statusDiv.style.color = '#27ae60';
+                    statusDiv.innerText = '✓ បង់ប្រាក់រួចរាល់!';
+                    setTimeout(() => { statusDiv.innerText = ''; }, 3000);
+                    
+                    loadInvoiceData();
+                } else {
+                    alert('មានបញ្ហាក្នុងការ Save៖ ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Error saving:', err);
+                alert('មិនអាចភ្ជាប់ទៅ Server បានទេ!');
             });
-            const result = await res.json();
-            
-            if (result.status === 'success') {
-                renderTable(result.data);
-            } else {
-                alert(result.message);
-            }
-        } catch (err) {
-            alert('មានបញ្ហាក្នុងការ Save: ' + err.message);
         }
-    }
 
-    loadInvoice();
-</script>
-
+        window.onload = loadInvoiceData;
+    </script>
 </body>
 </html>
