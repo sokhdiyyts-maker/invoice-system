@@ -12,14 +12,13 @@
         body {
             font-family: 'Kantumruy Pro', sans-serif;
             color: #1a1a1a;
-            background-color: #ffffff; /* ប្តូរមកជាពណ៌ស */
+            background-color: #ffffff;
             margin: 0;
             padding: 15px 10px;
             font-size: 13px;
             min-height: 100vh;
         }
 
-        /* Invoice Card (កែសម្រួលទំហំសម្រាប់ Mobile) */
         .invoice-card {
             max-width: 800px;
             width: 100%;
@@ -33,7 +32,6 @@
             border: 1px solid #e2e8f0;
         }
 
-        /* Snow Effect Canvas */
         #snowCanvas {
             position: absolute;
             top: 0;
@@ -72,7 +70,6 @@
         .dotted-line { border-bottom: 1px dotted #a0a0a0; height: 18px; }
         .section-header { font-size: 13px; font-weight: 700; color: #0b1e36; margin: 15px 0 10px 0; padding-left: 8px; border-left: 4px solid #0070c0; }
         
-        /* តារាង Responsive ដោះស្រួល Scroll លើទូរសព្ទ */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
@@ -103,7 +100,6 @@
         .status-msg { font-size: 12px; font-weight: bold; }
         .note-msg { font-size: 10px; color: #e67e22; margin-top: 4px; }
 
-        /* Media Queries សម្រាប់អេក្រង់ទូរសព្ទរហូតដល់ 600px */
         @media screen and (max-width: 600px) {
             .invoice-card { padding: 15px; }
             .header-container { flex-direction: column; align-items: flex-start; }
@@ -270,6 +266,12 @@
             `;
         });
 
+        // ----------------------------------------------------
+        // TEST MODE: កំណត់ true ដើម្បី Test ចុចបង់ប្រាក់បានភ្លាមៗ
+        // ពេល Test រួចរាល់អាចដូរមក false វិញបាន
+        // ----------------------------------------------------
+        const IS_TEST_MODE = true; 
+
         function loadInvoiceData() {
             fetch('/api/get-invoice?invoice_id=INV-2026-001')
             .then(res => res.json())
@@ -305,9 +307,13 @@
                             unpaidRadio.disabled = true;
 
                             if (!firstUnpaidFound) {
-                                if (today >= dueDate) {
+                                // បើជា TEST_MODE ឬដល់ថ្ងៃ Due Date គឺអនុញ្ញាតឱ្យចុចបាន
+                                if (IS_TEST_MODE || today >= dueDate) {
                                     paidRadio.disabled = false;
                                     paidLabel.classList.remove('disabled');
+                                    if (IS_TEST_MODE && today < dueDate) {
+                                        noteDiv.innerText = `🧪 (Test Mode: អនុញ្ញាតឱ្យចុចបង់បាន)`;
+                                    }
                                 } else {
                                     paidRadio.disabled = true;
                                     paidLabel.classList.add('disabled');
