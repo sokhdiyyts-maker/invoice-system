@@ -5,243 +5,214 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>វិក្កយបត្រ / INVOICE</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap');
-
-        * { box-sizing: border-box; }
         body {
-            font-family: 'Kantumruy Pro', sans-serif;
-            color: #1a1a1a;
-            background-color: #ffffff;
+            font-family: 'Kantumruy Pro', Arial, sans-serif;
+            background-color: #f4f6f9;
             margin: 0;
-            padding: 30px 20px;
+            padding: 20px;
+        }
+        .container {
             max-width: 800px;
-            margin: auto;
-            font-size: 13px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .header-container { display: flex; justify-content: space-between; align-items: flex-end; }
-        .main-title { font-size: 26px; font-weight: 800; color: #0b1e36; margin: 0; }
-        .invoice-number { font-size: 15px; font-weight: 700; color: #0070c0; text-align: right; }
-        .divider-line { width: 100%; height: 3px; background-color: #0070c0; margin: 8px 0 25px 0; }
-        .info-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 30px; margin-bottom: 25px; }
-        .info-label { font-weight: 700; }
-        .dotted-line { border-bottom: 1px dotted #a0a0a0; height: 18px; }
-        .section-header { font-size: 14px; font-weight: 700; color: #0b1e36; margin: 20px 0 10px 0; padding-left: 8px; border-left: 4px solid #0070c0; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .summary-table th { background-color: #0b132b; color: #fff; padding: 10px; text-align: left; }
-        .summary-table td { padding: 10px; border: 1px solid #e2e8f0; }
-        .amount-green { color: #27ae60; font-weight: 700; text-align: right; }
-        .amount-red { color: #e74c3c; font-weight: 700; text-align: right; }
-        .amount-bold { font-weight: 700; text-align: right; }
-        .schedule-table th, .schedule-table td { padding: 10px; border: 1px solid #cbd5e1; text-align: center; }
-        .schedule-table th { background-color: #f1f5f9; }
-        .checkbox-container { display: flex; justify-content: center; gap: 15px; }
-        .checkbox-label { display: flex; align-items: center; gap: 5px; font-weight: 600; cursor: pointer; }
-        .checkbox-label.disabled { cursor: not-allowed; opacity: 0.5; }
-        .signatures-container { display: flex; justify-content: space-around; margin: 50px 0 20px 0; text-align: center; }
-        .sig-title-kh { font-weight: 700; }
-        .sig-title-en { color: #64748b; font-size: 11px; margin-bottom: 50px; }
-        .sig-line { border-bottom: 1px dotted #94a3b8; width: 200px; margin: 0 auto; }
-        .footer-note { text-align: center; color: #64748b; font-size: 11px; margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
-        .status-msg { font-size: 12px; font-weight: bold; }
-        .note-msg { font-size: 11px; color: #e67e22; margin-top: 4px; font-weight: 600; }
-        .btn-refresh {
-            background-color: #0070c0;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
+        h2 { text-align: center; color: #1a252f; margin-bottom: 5px; }
+        .sub-title { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 20px; }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .info-item { font-size: 14px; }
+        .info-item strong { display: inline-block; width: 120px; }
+        
+        .section-title {
+            background: #0f172a;
+            color: #fff;
+            padding: 8px 12px;
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        th { background-color: #f8fafc; }
+        .text-right { text-align: right; }
+        .text-bold { font-weight: bold; }
+        .text-green { color: #16a34a; }
+        .text-red { color: #dc2626; }
+        
+        .status-radio {
             cursor: pointer;
-            font-size: 12px;
-            font-family: inherit;
+            margin: 0 5px;
         }
-        .btn-refresh:hover { background-color: #005691; }
+        
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            text-align: center;
+        }
+        .sig-box { width: 40%; }
+        .sig-line { margin-top: 60px; border-top: 1px solid #94a3b8; }
     </style>
 </head>
 <body>
 
-    <div class="header-container">
-        <div>
-            <h1 class="main-title">វិក្កយបត្រ / INVOICE</h1>
-            <div style="color: #7f8c8d; font-size: 13px;">ការបង់ប្រាក់រំលស់ប្រចាំខែ (Monthly Installment Invoice)</div>
-        </div>
-        <div style="text-align: right;">
-            <button class="btn-refresh" onclick="location.reload()">🔄 Refresh</button>
-            <div class="invoice-number" style="margin-top: 8px;">លេខវិក្កយបត្រ: #INV-2026-001</div>
-            <div style="font-size: 12px; color: #555;">កាលបរិច្ឆេទបង្កើត: 09/08/2026</div>
-        </div>
-    </div>
+<div class="container">
+    <h2>វិក្កយបត្រ / INVOICE</h2>
+    <div class="sub-title">ការបង់ប្រាក់រំលស់ប្រចាំខែ (Monthly Installment Payment) | លេខវិក្កយបត្រ: #INV-2026-001</div>
 
-    <div class="divider-line"></div>
-
-    <div class="info-container">
-        <div><div class="info-label">ឈ្មោះអតិថិជន:</div><div class="dotted-line"></div></div>
-        <div><div class="info-label">លេខទូរសព្ទ:</div><div class="dotted-line"></div></div>
-        <div><div class="info-label">អាសយដ្ឋាន:</div><div class="dotted-line"></div></div>
-        <div><div class="info-label">អត្តសញ្ញាណប័ណ្ណ:</div><div class="dotted-line"></div></div>
-    </div>
-
-    <div class="section-header">សេចក្តីលម្អិតនៃការទូទាត់ (Payment Summary)</div>
-    <table class="summary-table">
+    <div class="section-title">សេចក្តីលម្អិតនៃការទូទាត់ (Payment Summary)</div>
+    <table>
         <thead>
-            <tr><th>ពិពណ៌នា (Description)</th><th style="text-align: right;">ចំនួនទឹកប្រាក់ (Amount)</th></tr>
+            <tr>
+                <th style="text-align: left;">ពិពណ៌នា (Description)</th>
+                <th class="text-right">ចំនួនទឹកប្រាក់ (Amount)</th>
+            </tr>
         </thead>
         <tbody>
-            <tr><td>តម្លៃសរុបពេញ (Total Full Price)</td><td class="amount-bold">$1,300.00</td></tr>
-            <tr><td>ប្រាក់កក់ / បង់មុន (Upfront Paid / Deposit) [09/08/2026]</td><td class="amount-green">-$100.00</td></tr>
-            <tr><td><strong>ប្រាក់នៅខ្វះសរុប (Remaining Balance)</strong></td><td class="amount-red" id="remainingBalance">$1,200.00</td></tr>
+            <tr>
+                <td style="text-align: left;">តម្លៃសរុបពេញ (Total Full Price)</td>
+                <td class="text-right text-bold">$1,300.00</td>
+            </tr>
+            <tr>
+                <td style="text-align: left;">ប្រាក់កក់ / បង់មុន (Upfront Paid / Deposit) [09/08/2026]</td>
+                <td class="text-right text-bold text-green">-$100.00</td>
+            </tr>
+            <tr>
+                <td style="text-align: left;" class="text-bold">ប្រាក់នៅខ្វះសរុប (Remaining Balance)</td>
+                <td class="text-right text-bold text-red" id="remainingBalance">$1,200.00</td>
+            </tr>
         </tbody>
     </table>
 
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div class="section-header">កាលវិភាគបង់ប្រាក់ប្រចាំខែ (8 ខែ × $150/ខែ)</div>
-        <div id="saveStatus" class="status-msg"></div>
-    </div>
-
-    <table class="schedule-table">
+    <div class="section-title">កាលវិភាគបង់ប្រាក់ប្រចាំខែ (8 ខែ × $150/ខែ)</div>
+    <table>
         <thead>
             <tr>
-                <th style="width: 8%;">លើកទី</th>
-                <th style="width: 25%;">កាលបរិច្ឆេទត្រូវបង់ (Due Date)</th>
-                <th style="width: 17%;">ទឹកប្រាក់ (Amount)</th>
-                <th style="width: 50%;">ស្ថានភាព (Status)</th>
+                <th>លើកទី</th>
+                <th>កាលបរិច្ឆេទត្រូវបង់ (Due Date)</th>
+                <th>ទឹកប្រាក់ (Amount)</th>
+                <th>ស្ថានភាព (Status)</th>
             </tr>
         </thead>
-        <tbody id="installmentRows"></tbody>
+        <tbody id="installmentTable">
+            <!-- នឹងត្រូវទាញទិន្នន័យមកដាក់ដោយ JavaScript -->
+        </tbody>
     </table>
 
-    <div class="signatures-container">
-        <div><div class="sig-title-kh">ហត្ថលេខាអតិថិជន</div><div class="sig-title-en">Customer Signature</div><div class="sig-line"></div></div>
-        <div><div class="sig-title-kh">ហត្ថលេខាអ្នកទទួលប្រាក់</div><div class="sig-title-en">Receiver Signature</div><div class="sig-line"></div></div>
+    <div class="signature-section">
+        <div class="sig-box">
+            <strong>ហត្ថលេខាអតិថិជន</strong><br>
+            <small>Customer Signature</small>
+            <div class="sig-line"></div>
+        </div>
+        <div class="sig-box">
+            <strong>ហត្ថលេខាអ្នកទទួលប្រាក់</strong><br>
+            <small>Receiver Signature</small>
+            <div class="sig-line"></div>
+        </div>
     </div>
+</div>
 
-    <div class="footer-note">សូមអរគុណសម្រាប់ការប្រើប្រាស់សេវាកម្មរបស់យើងខ្ញុំ! / Thank you for your business!</div>
+<script>
+    // ថ្ងៃបង់ប្រាក់កក់ (09/08/2026)
+    const startDate = new Date(2026, 7, 9); // Month 7 គឺ ខែសីហា (August)
 
-    <script>
-        const installmentsData = [
-            { dateStr: "21/08/2026", dueDate: "2026-08-21" },
-            { dateStr: "09/09/2026", dueDate: "2026-09-09" },
-            { dateStr: "09/10/2026", dueDate: "2026-10-09" },
-            { dateStr: "09/11/2026", dueDate: "2026-11-09" },
-            { dateStr: "09/12/2026", dueDate: "2026-12-09" },
-            { dateStr: "09/01/2027", dueDate: "2027-01-09" },
-            { dateStr: "09/02/2027", dueDate: "2027-02-09" },
-            { dateStr: "09/03/2027", dueDate: "2027-03-09" }
-        ];
+    // មុខងារគណនាកាលបរិច្ឆេទ Due Date ឱ្យត្រូវរៀងរាល់ខែ
+    function getDueDate(monthIndex) {
+        let dueDate = new Date(startDate);
+        dueDate.setMonth(startDate.getMonth() + monthIndex); // បូកតាមចំនួនខែ (1 ដល់ 8)
+        
+        let day = String(dueDate.getDate()).padStart(2, '0');
+        let month = String(dueDate.getMonth() + 1).padStart(2, '0');
+        let year = dueDate.getFullYear();
+        
+        return `${day}/${month}/${year}`;
+    }
 
-        let currentInstallmentStatus = {};
-
-        const tbody = document.getElementById('installmentRows');
-        installmentsData.forEach((item, index) => {
-            let num = index + 1;
-            tbody.innerHTML += `
-                <tr>
-                    <td>${num}</td>
-                    <td>${item.dateStr}</td>
-                    <td><strong>$150.00</strong></td>
-                    <td>
-                        <div class="checkbox-container">
-                            <label class="checkbox-label disabled" id="label_unpaid_${num}" style="color: #e74c3c;">
-                                <input type="radio" id="unpaid_${num}" name="item_${num}" value="UNPAID" checked disabled> មិនទាន់បង់
-                            </label>
-                            <label class="checkbox-label disabled" id="label_paid_${num}" style="color: #27ae60;">
-                                <input type="radio" id="paid_${num}" name="item_${num}" value="PAID" disabled onchange="payMonth(${num})"> រួចរាល់
-                            </label>
-                        </div>
-                        <div id="note_${num}" class="note-msg"></div>
-                    </td>
-                </tr>
-            `;
-        });
-
-        function updateUIState() {
-            let firstUnpaidFound = false;
-
-            for (let i = 1; i <= 8; i++) {
-                const unpaidRadio = document.getElementById(`unpaid_${i}`);
-                const paidRadio = document.getElementById(`paid_${i}`);
-                const unpaidLabel = document.getElementById(`label_unpaid_${i}`);
-                const paidLabel = document.getElementById(`label_paid_${i}`);
-                const noteDiv = document.getElementById(`note_${i}`);
-
-                if (noteDiv) noteDiv.innerText = ''; 
-
-                if (currentInstallmentStatus[`month_${i}`] === 'PAID') {
-                    paidRadio.checked = true;
-                    unpaidRadio.disabled = true;
-                    paidRadio.disabled = true;
-                    unpaidLabel.classList.add('disabled');
-                    paidLabel.classList.add('disabled');
-                } else {
-                    unpaidRadio.checked = true;
-                    unpaidRadio.disabled = true;
-
-                    if (!firstUnpaidFound) {
-                        paidRadio.disabled = false;
-                        paidLabel.classList.remove('disabled');
-                        firstUnpaidFound = true;
-                    } else {
-                        paidRadio.disabled = true;
-                        paidLabel.classList.add('disabled');
-                    }
-                }
+    // ទាញយកទិន្នន័យពី API ពេល Load ទំព័រ
+    async function loadInvoice() {
+        try {
+            const res = await fetch('/api/get-invoice');
+            const result = await res.json();
+            
+            if (result.status === 'success') {
+                renderTable(result.data);
             }
+        } catch (err) {
+            console.error("Error loading invoice:", err);
         }
+    }
 
-        function loadInvoiceData() {
-            updateUIState();
+    // បង្កើតតារាងការបង់ប្រាក់
+    function renderTable(data) {
+        const tbody = document.getElementById('installmentTable');
+        document.getElementById('remainingBalance').innerText = `$${data.remaining_balance.toFixed(2)}`;
+        
+        tbody.innerHTML = '';
 
-            fetch('/api/get-invoice?invoice_id=INV-2026-001')
-            .then(res => res.json())
-            .then(res => {
-                let invoiceData = res.data || res;
+        for (let i = 1; i <= 8; i++) {
+            const monthKey = `month_${i}`;
+            const isPaid = data.installments[monthKey] === 'PAID';
+            const dueDateStr = getDueDate(i); // ទាញយកកាលបរិច្ឆេទដែលបានកែត្រូវ
 
-                if (invoiceData && invoiceData.installments) {
-                    currentInstallmentStatus = invoiceData.installments;
-                    updateUIState();
-
-                    if (invoiceData.remaining_balance !== undefined) {
-                        let currentBalance = parseFloat(invoiceData.remaining_balance);
-                        document.getElementById('remainingBalance').innerText = '$' + currentBalance.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-                    }
-                }
-            })
-            .catch(err => {
-                console.warn('Backend API connection note:', err);
-            });
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${i}</td>
+                <td><strong>${dueDateStr}</strong></td>
+                <td>$150.00</td>
+                <td>
+                    <label style="color: ${!isPaid ? '#dc2626' : '#64748b'};">
+                        <input type="radio" name="status_${i}" class="status-radio" ${!isPaid ? 'checked' : ''} disabled> មិនទាន់បង់
+                    </label>
+                    <label style="color: ${isPaid ? '#16a34a' : '#64748b'}; margin-left: 15px;">
+                        <input type="radio" name="status_${i}" class="status-radio" ${isPaid ? 'checked' : ''} onclick="markAsPaid(${i})"> រួចរាល់
+                    </label>
+                </td>
+            `;
+            tbody.appendChild(tr);
         }
+    }
 
-        function payMonth(monthNum) {
-            const statusDiv = document.getElementById('saveStatus');
-            statusDiv.style.color = '#d35400';
-            statusDiv.innerText = '⏳ កំពុង រក្សាទុក...';
-
-            fetch('/api/mark-as-paid', {
+    // មុខងារកត់ត្រាការបង់ប្រាក់
+    async function markAsPaid(monthNumber) {
+        try {
+            const res = await fetch('/api/mark-as-paid', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    invoice_id: 'INV-2026-001',
-                    month_number: monthNum
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    statusDiv.style.color = '#27ae60';
-                    statusDiv.innerText = '✓ បង់ប្រាក់រួចរាល់!';
-                    setTimeout(() => { statusDiv.innerText = ''; }, 3000);
-                    
-                    loadInvoiceData();
-                } else {
-                    alert('មានបញ្ហាក្នុងការ Save៖ ' + data.message);
-                }
-            })
-            .catch(err => {
-                console.error('Error saving:', err);
-                alert('មិនអាចភ្ជាប់ទៅ Server បានទេ!');
+                body: JSON.stringify({ month_number: monthNumber })
             });
+            const result = await res.json();
+            
+            if (result.status === 'success') {
+                renderTable(result.data);
+            } else {
+                alert(result.message);
+            }
+        } catch (err) {
+            alert('មានបញ្ហាក្នុងការ Save: ' + err.message);
         }
+    }
 
-        window.onload = loadInvoiceData;
-    </script>
+    // ដំណើការ Load ទិន្នន័យដំបូង
+    loadInvoice();
+</script>
+
 </body>
 </html>
