@@ -9,7 +9,6 @@
 
         * { box-sizing: border-box; }
         
-        /* Background Animated Gradient */
         body {
             font-family: 'Kantumruy Pro', sans-serif;
             color: #1a1a1a;
@@ -20,8 +19,6 @@
             padding: 30px 20px;
             font-size: 13px;
             min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
         }
 
         @keyframes gradientBG {
@@ -30,7 +27,7 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Invoice Container Card */
+        /* Invoice Card (កំណត់ position: relative ដើម្បីផ្ទុកព្រិល) */
         .invoice-card {
             max-width: 800px;
             margin: auto;
@@ -40,17 +37,23 @@
             border-radius: 16px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 112, 192, 0.2);
             position: relative;
-            z-index: 2;
+            overflow: hidden; /* ការពារព្រិលធ្លាក់ធ្លាយចេញក្រៅ Invoice */
         }
 
-        /* Snow effect canvas */
+        /* Snow Effect សម្រាប់តែក្នុង Invoice មួយគត់ */
         #snowCanvas {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
+            pointer-events: none; /* អនុញ្ញាតឱ្យចុចលើ Checkbox / Button បាន عادي */
+            z-index: 10;
+        }
+
+        /* Elements ក្នង Invoice ត្រូវកំណត់ z-index ដើម្បីឱ្យមើលឃើញច្បាស់ */
+        .invoice-content {
+            position: relative;
             z-index: 1;
         }
 
@@ -88,99 +91,101 @@
 </head>
 <body>
 
-    <!-- Snow Animation Overlay -->
-    <canvas id="snowCanvas"></canvas>
+    <div class="invoice-card" id="invoiceCard">
+        <!-- Canvas ព្រិលស្ថិតនៅខាងក្នុង Invoice Card តែមួយ -->
+        <canvas id="snowCanvas"></canvas>
 
-    <div class="invoice-card">
-        <div class="header-container">
-            <div>
-                <h1 class="main-title">វិក្កយបត្រ / INVOICE</h1>
-                <div style="color: #7f8c8d; font-size: 13px;">ការបង់ប្រាក់រំលស់ប្រចាំខែ (Monthly Installment Invoice)</div>
+        <div class="invoice-content">
+            <div class="header-container">
+                <div>
+                    <h1 class="main-title">វិក្កយបត្រ / INVOICE</h1>
+                    <div style="color: #7f8c8d; font-size: 13px;">ការបង់ប្រាក់រំលស់ប្រចាំខែ (Monthly Installment Invoice)</div>
+                </div>
+                <div>
+                    <div class="invoice-number">លេខវិក្កយបត្រ: #INV-2026-001</div>
+                    <div style="font-size: 12px; color: #555; text-align: right;">កាលបរិច្ឆេទបង្កើត: 09/08/2026</div>
+                </div>
             </div>
-            <div>
-                <div class="invoice-number">លេខវិក្កយបត្រ: #INV-2026-001</div>
-                <div style="font-size: 12px; color: #555; text-align: right;">កាលបរិច្ឆេទបង្កើត: 09/08/2026</div>
+
+            <div class="divider-line"></div>
+
+            <div class="info-container">
+                <div><div class="info-label">ឈ្មោះអតិថិជន:</div><div class="dotted-line"></div></div>
+                <div><div class="info-label">លេខទូរសព្ទ:</div><div class="dotted-line"></div></div>
+                <div><div class="info-label">អាសយដ្ឋាន:</div><div class="dotted-line"></div></div>
+                <div><div class="info-label">អត្តសញ្ញាណប័ណ្ណ:</div><div class="dotted-line"></div></div>
             </div>
+
+            <div class="section-header">សេចក្តីលម្អិតនៃការទូទាត់ (Payment Summary)</div>
+            <table class="summary-table">
+                <thead>
+                    <tr><th>ពិពណ៌នា (Description)</th><th style="text-align: right;">ចំនួនទឹកប្រាក់ (Amount)</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>តម្លៃសរុបពេញ (Total Full Price)</td><td class="amount-bold">$1,300.00</td></tr>
+                    <tr><td>ប្រាក់កក់ / បង់មុន (Upfront Paid / Deposit) [09/08/2026]</td><td class="amount-green">-$100.00</td></tr>
+                    <tr><td><strong>ប្រាក់នៅខ្វះសរុប (Remaining Balance)</strong></td><td class="amount-red" id="remainingBalance">$1,200.00</td></tr>
+                </tbody>
+            </table>
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="section-header">កាលវិភាគបង់ប្រាក់ប្រចាំខែ (8 ខែ × $150/ខែ)</div>
+                <div id="saveStatus" class="status-msg"></div>
+            </div>
+
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th style="width: 8%;">លើកទី</th>
+                        <th style="width: 30%;">កាលបរិច្ឆេទត្រូវបង់ (Due Date)</th>
+                        <th style="width: 20%;">ទឹកប្រាក់ (Amount)</th>
+                        <th style="width: 42%;">ស្ថានភាព (Status)</th>
+                    </tr>
+                </thead>
+                <tbody id="installmentRows">
+                    <!-- បង្កើតជួរតារាងដោយ JavaScript -->
+                </tbody>
+            </table>
+
+            <div class="signatures-container">
+                <div><div class="sig-title-kh">ហត្ថលេខាអតិថិជន</div><div class="sig-title-en">Customer Signature</div><div class="sig-line"></div></div>
+                <div><div class="sig-title-kh">ហត្ថលេខាអ្នកទទួលប្រាក់</div><div class="sig-title-en">Receiver Signature</div><div class="sig-line"></div></div>
+            </div>
+
+            <div class="footer-note">សូមអរគុណសម្រាប់ការប្រើប្រាស់សេវាកម្មរបស់យើងខ្ញុំ! / Thank you for your business!</div>
         </div>
-
-        <div class="divider-line"></div>
-
-        <div class="info-container">
-            <div><div class="info-label">ឈ្មោះអតិថិជន:</div><div class="dotted-line"></div></div>
-            <div><div class="info-label">លេខទូរសព្ទ:</div><div class="dotted-line"></div></div>
-            <div><div class="info-label">អាសយដ្ឋាន:</div><div class="dotted-line"></div></div>
-            <div><div class="info-label">អត្តសញ្ញាណប័ណ្ណ:</div><div class="dotted-line"></div></div>
-        </div>
-
-        <div class="section-header">សេចក្តីលម្អិតនៃការទូទាត់ (Payment Summary)</div>
-        <table class="summary-table">
-            <thead>
-                <tr><th>ពិពណ៌នា (Description)</th><th style="text-align: right;">ចំនួនទឹកប្រាក់ (Amount)</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>តម្លៃសរុបពេញ (Total Full Price)</td><td class="amount-bold">$1,300.00</td></tr>
-                <tr><td>ប្រាក់កក់ / បង់មុន (Upfront Paid / Deposit) [09/08/2026]</td><td class="amount-green">-$100.00</td></tr>
-                <tr><td><strong>ប្រាក់នៅខ្វះសរុប (Remaining Balance)</strong></td><td class="amount-red" id="remainingBalance">$1,200.00</td></tr>
-            </tbody>
-        </table>
-
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div class="section-header">កាលវិភាគបង់ប្រាក់ប្រចាំខែ (8 ខែ × $150/ខែ)</div>
-            <div id="saveStatus" class="status-msg"></div>
-        </div>
-
-        <table class="schedule-table">
-            <thead>
-                <tr>
-                    <th style="width: 8%;">លើកទី</th>
-                    <th style="width: 30%;">កាលបរិច្ឆេទត្រូវបង់ (Due Date)</th>
-                    <th style="width: 20%;">ទឹកប្រាក់ (Amount)</th>
-                    <th style="width: 42%;">ស្ថានភាព (Status)</th>
-                </tr>
-            </thead>
-            <tbody id="installmentRows">
-                <!-- បង្កើតជួរតារាងដោយ JavaScript -->
-            </tbody>
-        </table>
-
-        <div class="signatures-container">
-            <div><div class="sig-title-kh">ហត្ថលេខាអតិថិជន</div><div class="sig-title-en">Customer Signature</div><div class="sig-line"></div></div>
-            <div><div class="sig-title-kh">ហត្ថលេខាអ្នកទទួលប្រាក់</div><div class="sig-title-en">Receiver Signature</div><div class="sig-line"></div></div>
-        </div>
-
-        <div class="footer-note">សូមអរគុណសម្រាប់ការប្រើប្រាស់សេវាកម្មរបស់យើងខ្ញុំ! / Thank you for your business!</div>
     </div>
 
     <script>
-        // --- Dynamic Colorful Snow Script ---
+        // --- Snow Effect Inside Invoice Only ---
+        const card = document.getElementById('invoiceCard');
         const canvas = document.getElementById('snowCanvas');
         const ctx = canvas.getContext('2d');
 
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
-
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        });
+        function resizeCanvas() {
+            canvas.width = card.offsetWidth;
+            canvas.height = card.offsetHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
         const particles = [];
-        const colors = ['#ffffff', '#38bdf8', '#c084fc', '#f472b6', '#facc15'];
+        const colors = ['#0070c0', '#38bdf8', '#c084fc', '#f472b6', '#facc15'];
 
-        for (let i = 0; i < 70; i++) {
+        for (let i = 0; i < 50; i++) {
             particles.push({
-                x: Math.random() * width,
-                y: Math.random() * height,
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
                 radius: Math.random() * 3 + 1,
                 color: colors[Math.floor(Math.random() * colors.length)],
-                speedY: Math.random() * 1.5 + 0.5,
-                speedX: Math.random() * 1 - 0.5,
-                opacity: Math.random() * 0.7 + 0.3
+                speedY: Math.random() * 1.2 + 0.5,
+                speedX: Math.random() * 0.8 - 0.4,
+                opacity: Math.random() * 0.6 + 0.3
             });
         }
 
         function animateSnow() {
-            ctx.clearRect(0, 0, width, height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach(p => {
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
@@ -191,9 +196,9 @@
                 p.y += p.speedY;
                 p.x += p.speedX;
 
-                if (p.y > height) {
+                if (p.y > canvas.height) {
                     p.y = -5;
-                    p.x = Math.random() * width;
+                    p.x = Math.random() * canvas.width;
                 }
             });
             requestAnimationFrame(animateSnow);
